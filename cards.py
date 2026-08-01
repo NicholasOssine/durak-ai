@@ -18,3 +18,9 @@ def rank(card):
 
 def suit(card):
     return card % 4
+
+def beats(attack, defence, trump):
+    if suit(defence) == suit(attack):
+        return rank(defence) > rank(attack)
+    return suit(defence) == trump
+
