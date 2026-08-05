@@ -56,18 +56,18 @@ class Durak:
         return actions
 
     def apply(self, action):
-        type, card = action
+        action_type, card = action
 
-        if type == "attack":
+        if action_type == "attack":
             self.hands[self.attacker].remove(card)
             self.table.append([card, None])
             if self.phase != "TAKING":
                 self.phase = "DEFEND"
 
-        elif type == "defend":
+        elif action_type == "defend":
             self.hands[1 - self.attacker].remove(card)
             self.table[-1][-1] = card
             self.phase = "ATTACK"
 
-        elif type == "take":
-            self.phase == "TAKING"
+        elif action_type == "take":
+            self.phase = "TAKING"
