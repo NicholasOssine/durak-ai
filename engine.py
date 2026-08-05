@@ -63,3 +63,8 @@ class Durak:
             self.table.append([card, None])
             if self.phase != "TAKING":
                 self.phase = "DEFEND"
+
+        elif type == "defend":
+            self.hands[1 - self.attacker].remove(card)
+            self.table[-1][-1] = card
+            self.phase = "ATTACK"
