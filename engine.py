@@ -36,3 +36,9 @@ class Durak:
         if self.phase == "ATTACK" and not self.table:
             return [("attack", card) for card in self.hands[self.attacker]]
 
+        if self.phase == "DEFEND":
+            defender = 1 - self.attacker
+            attack_card = self.table[-1][0]
+            actions = [("defend", card) for card in self.hands[defender] if beats(attack_card, card, self.trump)]
+            actions.append(("take", None))
+            return actions
