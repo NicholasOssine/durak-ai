@@ -1,6 +1,6 @@
 import random
 
-from cards import DECK, suit
+from cards import DECK, beats, rank, suit
 
 
 class Durak:
@@ -13,7 +13,11 @@ class Durak:
         self.talon = deck[12:]
         self.trump_card = self.talon[0]
         self.trump = suit(self.trump_card)
+
         self.attacker = self.first_attacker()
+        self.table = []
+        self.phase = "ATTACK"
+       
 
     def first_attacker(self):
         best_player = 0
@@ -27,4 +31,8 @@ class Durak:
                     best_player = player
 
         return best_player
+
+    def get_actions(self):
+        if self.phase == "ATTACK" and not self.table:
+            return [("attack", card) for card in self.hands[self.attacker]]
 
