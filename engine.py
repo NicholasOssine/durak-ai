@@ -17,7 +17,7 @@ class Durak:
         self.attacker = self.first_attacker()
         self.table = []
         self.phase = "ATTACK"
-       
+        self.max_attacks = min(6, len(self.hands[1 - self.attacker]))
 
     def first_attacker(self):
         best_player = 0
@@ -33,12 +33,24 @@ class Durak:
         return best_player
 
     def get_actions(self):
-        if self.phase == "ATTACK" and not self.table:
-            return [("attack", card) for card in self.hands[self.attacker]]
-
         if self.phase == "DEFEND":
             defender = 1 - self.attacker
             attack_card = self.table[-1][0]
             actions = [("defend", card) for card in self.hands[defender] if beats(attack_card, card, self.trump)]
             actions.append(("take", None))
             return actions
+        
+        if self.phase == "ATTACK" and not self.table:
+            return [("attack", card) for card in self.hands[self.attacker]]
+        
+        actions = []
+        if len(self.table) < self.max_attacks:
+            table_ranks = set()
+            for row in self.table:
+                for card in row:
+                    if card is not None:
+                        table_ranks.add(rank(card))
+            actions = [("attack", card) for card in self.hands[self.attacker] if rank(card) in table_ranks]
+
+        actions.append(("end", None))
+        return actions
