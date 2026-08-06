@@ -20,6 +20,8 @@ class Durak:
         self.phase = "ATTACK"
         self.max_attacks = min(6, len(self.hands[1 - self.attacker]))
 
+        self.durak = None
+
     def first_attacker(self):
         best_player = 0
         best_trump = None
@@ -34,6 +36,9 @@ class Durak:
         return best_player
 
     def get_actions(self):
+        if self.phase == "OVER":
+            return []
+
         if self.phase == "DEFEND":
             defender = 1 - self.attacker
             attack_card = self.table[-1][0]
@@ -89,6 +94,17 @@ class Durak:
             self.table.clear()
             self.draw(self.attacker)
             self.draw(defender)
+
+            if not self.talon:
+                if not self.hands[self.attacker] or not self.hands[defender]:
+                    self.phase = "OVER"
+                    if not self.hands[self.attacker] and not self.hands[defender]:
+                        self.durak = None
+                    elif not self.hands[self.attacker]:
+                        self.durak = defender
+                    else:
+                        self.durak = self.attacker
+                    return
 
             if self.phase != "TAKING":
                 self.attacker = defender
