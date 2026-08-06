@@ -16,6 +16,7 @@ class Durak:
 
         self.attacker = self.first_attacker()
         self.table = []
+        self.discard = []
         self.phase = "ATTACK"
         self.max_attacks = min(6, len(self.hands[1 - self.attacker]))
 
@@ -71,3 +72,8 @@ class Durak:
 
         elif action_type == "take":
             self.phase = "TAKING"
+
+    def draw(self, player):
+        hand = self.hands[player]
+        while len(hand) < 6 and self.talon:
+            hand.append(self.talon.pop())
