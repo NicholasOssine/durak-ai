@@ -116,3 +116,8 @@ class Durak:
         hand = self.hands[player]
         while len(hand) < 6 and self.talon:
             hand.append(self.talon.pop())
+
+    def current_player(self):
+        if self.phase == "DEFEND":
+            return 1 - self.attacker
+        return self.attacker
