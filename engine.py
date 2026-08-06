@@ -73,6 +73,29 @@ class Durak:
         elif action_type == "take":
             self.phase = "TAKING"
 
+        elif action_type == "end":
+            cards = []
+            for row in self.table:
+                for card in row:
+                    if card is not None:
+                        cards.append(card)
+
+            defender = 1 - self.attacker
+            if self.phase == "TAKING":
+                self.hands[defender].extend(cards)
+            else:
+                self.discard.extend(cards)
+
+            self.table.clear()
+            self.draw(self.attacker)
+            self.draw(defender)
+
+            if self.phase != "TAKING":
+                self.attacker = defender
+
+            self.phase = "ATTACK"
+            self.max_attacks = min(6, len(self.hands[1 - self.attacker]))
+
     def draw(self, player):
         hand = self.hands[player]
         while len(hand) < 6 and self.talon:
