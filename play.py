@@ -9,17 +9,30 @@ def utility(game):
     return 0 if durak is None else 1 if durak == 1 else -1
 
 
-def minimax(game):
+def minimax(game, alpha=float("-inf"), beta=float("inf")):
     if game.phase == "OVER":
         return utility(game)
 
-    values = []
-    for action in game.get_actions():
-        child = deepcopy(game)
-        child.apply(action)
-        values.append(minimax(child))
-
-    return max(values) if game.current_player() == 0 else min(values)
+    if game.current_player() == 0:
+        value = float("-inf")
+        for action in game.get_actions():
+            child = deepcopy(game)
+            child.apply(action)
+            value = max(value, minimax(child, alpha, beta))
+            alpha = max(alpha, value)
+            if value >= beta:
+                break
+        return value
+    else:
+        value = float("inf")
+        for action in game.get_actions():
+            child = deepcopy(game)
+            child.apply(action)
+            value = min(value, minimax(child, alpha, beta))
+            beta = min(beta, value)
+            if value <= alpha:
+                break
+        return value
 
 
 def best_action(game):
@@ -30,7 +43,7 @@ def best_action(game):
         for action in game.get_actions():
             child = deepcopy(game)
             child.apply(action)
-            value = minimax(child)
+            value = minimax(child, chosen_value, float("inf"))
             if value > chosen_value:
                 chosen_action = action
                 chosen_value = value
@@ -39,7 +52,7 @@ def best_action(game):
         for action in game.get_actions():
             child = deepcopy(game)
             child.apply(action)
-            value = minimax(child)
+            value = minimax(child, float("-inf"), chosen_value)
             if value < chosen_value:
                 chosen_action = action
                 chosen_value = value
