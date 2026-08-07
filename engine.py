@@ -121,3 +121,17 @@ class Durak:
         if self.phase == "DEFEND":
             return 1 - self.attacker
         return self.attacker
+
+    def copy(self):
+        game = Durak.__new__(Durak)
+        game.hands = [self.hands[0][:], self.hands[1][:]]
+        game.talon = self.talon[:]
+        game.trump = self.trump
+        game.trump_card = self.trump_card
+        game.table = [row[:] for row in self.table]
+        game.discard = self.discard[:]
+        game.attacker = self.attacker
+        game.phase = self.phase
+        game.max_attacks = self.max_attacks
+        game.durak = self.durak
+        return game

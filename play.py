@@ -1,5 +1,4 @@
 import random
-from copy import deepcopy
 
 from engine import Durak
 
@@ -16,7 +15,7 @@ def minimax(game, alpha=float("-inf"), beta=float("inf")):
     if game.current_player() == 0:
         value = float("-inf")
         for action in game.get_actions():
-            child = deepcopy(game)
+            child = game.copy()
             child.apply(action)
             value = max(value, minimax(child, alpha, beta))
             alpha = max(alpha, value)
@@ -26,7 +25,7 @@ def minimax(game, alpha=float("-inf"), beta=float("inf")):
     else:
         value = float("inf")
         for action in game.get_actions():
-            child = deepcopy(game)
+            child = game.copy()
             child.apply(action)
             value = min(value, minimax(child, alpha, beta))
             beta = min(beta, value)
@@ -41,7 +40,7 @@ def best_action(game):
     if game.current_player() == 0:
         chosen_value = float("-inf")
         for action in game.get_actions():
-            child = deepcopy(game)
+            child = game.copy()
             child.apply(action)
             value = minimax(child, chosen_value, float("inf"))
             if value > chosen_value:
@@ -50,7 +49,7 @@ def best_action(game):
     else:
         chosen_value = float("inf")
         for action in game.get_actions():
-            child = deepcopy(game)
+            child = game.copy()
             child.apply(action)
             value = minimax(child, float("-inf"), chosen_value)
             if value < chosen_value:
