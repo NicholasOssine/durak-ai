@@ -50,9 +50,11 @@ def best_action(game):
 def play():
     game = Durak()
     while game.phase != "OVER":
-        actions = game.get_actions()
-        game.apply(random.choice(actions))     
-
+        if not game.talon:
+            action = best_action(game)
+        else:
+            action = random.choice(game.get_actions())
+        game.apply(action)
     return game.durak
 
 
