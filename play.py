@@ -1,12 +1,33 @@
 import random
+from copy import deepcopy
 
 from engine import Durak
+
+# Player 0 is max, player 1 is min
+def utility(game):
+    durak = game.durak
+    return 0 if durak is None else 1 if durak == 1 else -1
+
+
+def minimax(game):
+    if game.phase == "OVER":
+        return utility(game)
+
+    values = []
+    for action in game.get_actions():
+        child = deepcopy(game)
+        child.apply(action)
+        values.append(minimax(child))
+
+    return max(values) if game.current_player() == 0 else min(values)
 
 
 def play():
     game = Durak()
     while game.phase != "OVER":
-        game.apply(random.choice(game.get_actions()))
+        actions = game.get_actions()
+        game.apply(random.choice(actions))     
+
     return game.durak
 
 
