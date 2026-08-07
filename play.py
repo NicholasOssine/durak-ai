@@ -22,6 +22,31 @@ def minimax(game):
     return max(values) if game.current_player() == 0 else min(values)
 
 
+def best_action(game):
+    chosen_action = None
+
+    if game.current_player() == 0:
+        chosen_value = float("-inf")
+        for action in game.get_actions():
+            child = deepcopy(game)
+            child.apply(action)
+            value = minimax(child)
+            if value > chosen_value:
+                chosen_action = action
+                chosen_value = value
+    else:
+        chosen_value = float("inf")
+        for action in game.get_actions():
+            child = deepcopy(game)
+            child.apply(action)
+            value = minimax(child)
+            if value < chosen_value:
+                chosen_action = action
+                chosen_value = value
+
+    return chosen_action
+
+
 def play():
     game = Durak()
     while game.phase != "OVER":
