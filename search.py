@@ -9,5 +9,7 @@ def determinize(game, player):
 
     opponent_hand_size = len(game.hands[opponent])
     game.hands[opponent] = hidden[:opponent_hand_size]
-    game.talon = hidden[opponent_hand_size:]
+    rest = hidden[opponent_hand_size:]
+    game.talon = [game.trump_card] + rest if game.talon else rest
+
     return game
