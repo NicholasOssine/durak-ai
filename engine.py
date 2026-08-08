@@ -22,6 +22,20 @@ class Durak:
 
         self.durak = None
 
+    def copy(self):
+        game = Durak.__new__(Durak)
+        game.hands = [self.hands[0][:], self.hands[1][:]]
+        game.talon = self.talon[:]
+        game.trump = self.trump
+        game.trump_card = self.trump_card
+        game.table = [row[:] for row in self.table]
+        game.discard = self.discard[:]
+        game.attacker = self.attacker
+        game.phase = self.phase
+        game.max_attacks = self.max_attacks
+        game.durak = self.durak
+        return game
+
     def first_attacker(self):
         best_player = 0
         best_trump = None
@@ -122,16 +136,13 @@ class Durak:
             return 1 - self.attacker
         return self.attacker
 
-    def copy(self):
-        game = Durak.__new__(Durak)
-        game.hands = [self.hands[0][:], self.hands[1][:]]
-        game.talon = self.talon[:]
-        game.trump = self.trump
-        game.trump_card = self.trump_card
-        game.table = [row[:] for row in self.table]
-        game.discard = self.discard[:]
-        game.attacker = self.attacker
-        game.phase = self.phase
-        game.max_attacks = self.max_attacks
-        game.durak = self.durak
-        return game
+
+    def hidden_from(self, player):
+        seen = set(self.hands[player])
+        seen.update(self.discard)
+        seen.add(self.trump_card)
+        for row in self.table:
+            for card in row:
+                if card is not None:
+                    seen.add(card)
+        return [card for card in DECK if card not in seen]
