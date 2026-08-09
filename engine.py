@@ -136,11 +136,9 @@ class Durak:
             return 1 - self.attacker
         return self.attacker
 
-
     def hidden_from(self, player):
         seen = set(self.hands[player])
         seen.update(self.discard)
-        seen.add(self.trump_card)
         for row in self.table:
             for card in row:
                 if card is not None:

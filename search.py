@@ -5,8 +5,10 @@ def determinize(game, player):
     opponent = 1 - player
 
     hidden = game.hidden_from(player)
+    if game.talon:
+        hidden.remove(game.trump_card)
     random.shuffle(hidden)
-
+    
     opponent_hand_size = len(game.hands[opponent])
     game.hands[opponent] = hidden[:opponent_hand_size]
     rest = hidden[opponent_hand_size:]
