@@ -1,6 +1,8 @@
 import math
 import random
 
+from heuristic import heuristic_action
+
 
 class Node:
     def __init__(self, parent=None, action=None, player=None):
@@ -50,3 +52,9 @@ def uct_select(node, actions, exploration):
         return exploitation_part + exploration_part
 
     return max((node.children[action] for action in actions), key=uct)
+
+
+def simulate(game):
+    while game.phase != "OVER":
+        game.apply(heuristic_action(game, game.get_actions))
+    return game.durak
