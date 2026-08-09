@@ -74,7 +74,7 @@ def backpropagate(node, durak):
         node = node.parent
 
 
-def iterate(root, game, player, exploration=0.7):
+def iterate(root, game, player, exploration):
     node = root
     state = determinize(game, player)
 
@@ -91,3 +91,13 @@ def iterate(root, game, player, exploration=0.7):
         node = node.add_child(action, mover)
 
     backpropagate(node, simulate(state))
+
+
+def ismcts_action(game, iterations=1000, exploration=0.7):
+    player = game.current_player()
+    root = Node()
+
+    for _ in range(iterations):
+        iterate(root, game, player, exploration)
+
+    return max(root.children.items(), key=lambda item: item[1].visits)[0]
