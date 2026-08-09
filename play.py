@@ -1,4 +1,6 @@
 from engine import Durak
+from heuristic import heuristic_action
+from search import ismcts_action
 
 
 def play(agents):
@@ -23,3 +25,6 @@ def match(agent_a, agent_b, games=100):
             losses[1 - durak if swapped else durak] += 1
 
     print(f"A lost {losses[0] / games:.1%}, B lost {losses[1] / games:.1%}, draws {draws}")
+
+
+match(ismcts_action, heuristic_action, games=50)
