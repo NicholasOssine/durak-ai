@@ -13,6 +13,9 @@ class Node:
         self.wins = 0
         self.available = 0
 
+    def untried(self, actions):
+        return [action for action in actions if action not in self.children]
+
 
 def determinize(game, player):
     game = game.copy()
