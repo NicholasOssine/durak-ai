@@ -93,7 +93,7 @@ def iterate(root, game, player, exploration):
     backpropagate(node, simulate(state))
 
 
-def ismcts_action(game, iterations=1000, exploration=0.7):
+def ismcts_action(game, actions, iterations=1000, exploration=0.7):
     player = game.current_player()
     root = Node()
 
