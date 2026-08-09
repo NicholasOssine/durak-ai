@@ -64,3 +64,11 @@ def score(durak, player):
     if durak is None:
         return 0.5
     return 1 if durak != player else 0
+
+
+def backpropagate(node, durak):
+    while node is not None:
+        node.visits += 1
+        if node.player is not None:
+            node.wins += score(durak, node.player)
+        node = node.parent
