@@ -5,8 +5,9 @@ def cost(card, trump):
     return rank(card) + (9 if suit(card) == trump else 0)
 
 
-def heuristic_action(game, actions):
+def heuristic_action(game):
     trump = game.trump
+    actions = game.get_actions()
 
     if game.phase == "DEFEND":
         defences = [card for action_type, card in actions if action_type == "defend"]

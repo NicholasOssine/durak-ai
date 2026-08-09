@@ -56,7 +56,7 @@ def uct_select(node, actions, exploration):
 
 def simulate(game):
     while game.phase != "OVER":
-        game.apply(heuristic_action(game, game.get_actions()))
+        game.apply(heuristic_action(game))
     return game.durak
 
 

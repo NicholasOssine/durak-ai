@@ -7,7 +7,7 @@ from engine import Durak
 def play(agents):
     game = Durak()
     while game.phase != "OVER":
-        game.apply(agents[game.current_player()](game, game.get_actions()))
+        game.apply(agents[game.current_player()](game))
     return game.durak
 
 
