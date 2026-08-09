@@ -58,3 +58,9 @@ def simulate(game):
     while game.phase != "OVER":
         game.apply(heuristic_action(game, game.get_actions))
     return game.durak
+
+
+def score(durak, player):
+    if durak is None:
+        return 0.5
+    return 1 if durak != player else 0
