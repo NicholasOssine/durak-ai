@@ -4,14 +4,10 @@ from endgame import best_action
 from engine import Durak
 
 
-def play():
+def play(agents):
     game = Durak()
     while game.phase != "OVER":
-        if not game.talon:
-            action = best_action(game)
-        else:
-            action = random.choice(game.get_actions())
-        game.apply(action)
+        game.apply(agents[game.current_player()](game, game.get_actions()))
     return game.durak
 
 
