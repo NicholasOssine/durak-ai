@@ -1,3 +1,4 @@
+import math
 import random
 
 
@@ -20,7 +21,7 @@ class Node:
         child = Node(parent=self, action=action, player=player)
         self.children[action] = child
         return child
-
+    
 
 def determinize(game, player):
     game = game.copy()
@@ -37,3 +38,15 @@ def determinize(game, player):
     game.talon = [game.trump_card] + rest if game.talon else rest
 
     return game
+
+
+def uct_select(node, actions, exploration):
+    for action in actions:
+        node.children[action].available += 1
+
+    def uct(child):
+        exploitation_part = child.wins / child.visits
+        exploration_part = exploration * math.sqrt(math.log(child.available) / child.visits)
+        return exploitation_part + exploration_part
+
+    return max((node.children[action] for action in actions), key=uct)
