@@ -56,7 +56,7 @@ def uct_select(node, actions, exploration):
 
 def simulate(game):
     while game.phase != "OVER":
-        game.apply(heuristic_action(game, game.get_actions))
+        game.apply(heuristic_action(game, game.get_actions()))
     return game.durak
 
 
@@ -72,3 +72,22 @@ def backpropagate(node, durak):
         if node.player is not None:
             node.wins += score(durak, node.player)
         node = node.parent
+
+
+def iterate(root, game, player, exploration=0.7):
+    node = root
+    state = determinize(game, player)
+
+    actions = state.get_actions()
+    while state.phase != "OVER" and not node.untried(actions):
+        node = uct_select(node, actions, exploration)
+        state.apply(node.action)
+        actions = state.get_actions()
+
+    if state.phase != "OVER":
+        action = random.choice(node.untried(actions))
+        mover = state.current_player()
+        state.apply(action)
+        node = node.add_child(action, mover)
+
+    backpropagate(node, simulate(state))
