@@ -16,6 +16,11 @@ class Node:
     def untried(self, actions):
         return [action for action in actions if action not in self.children]
 
+    def add_child(self, action, player):
+        child = Node(parent=self, action=action, player=player)
+        self.children[action] = child
+        return child
+
 
 def determinize(game, player):
     game = game.copy()
