@@ -1,5 +1,19 @@
 import random
 
+
+class Node:
+    def __init__(self, parent=None, action=None, player=None):
+        self.parent = parent
+        self.children = {}
+
+        self.action = action
+        self.player = player
+
+        self.visits = 0
+        self.wins = 0
+        self.available = 0
+
+
 def determinize(game, player):
     game = game.copy()
     opponent = 1 - player
@@ -8,7 +22,7 @@ def determinize(game, player):
     if game.talon:
         hidden.remove(game.trump_card)
     random.shuffle(hidden)
-    
+
     opponent_hand_size = len(game.hands[opponent])
     game.hands[opponent] = hidden[:opponent_hand_size]
     rest = hidden[opponent_hand_size:]
