@@ -1,6 +1,3 @@
-import random
-
-from endgame import best_action
 from engine import Durak
 
 
@@ -11,16 +8,15 @@ def play(agents):
     return game.durak
 
 
-def run_games(num_games):
-    results = {
-        0: 0,
-        1: 0,
-        None: 0,
-    }
+def match(agent_a, agent_b, games=100):
+    losses = [0, 0]
+    draws = 0
 
-    for _ in range(num_games):
-        results[play()] += 1
+    for _ in range(games):
+        durak = play([agent_a, agent_b])
+        if durak is None:
+            draws += 1
+        else:
+            losses[durak] += 1
 
-    print(results)
-
-run_games(1000)
+    print(f"A lost {losses[0] / games:.1%}, B lost {losses[1] / games:.1%}, draws {draws}")
