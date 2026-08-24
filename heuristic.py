@@ -13,13 +13,7 @@ def heuristic_action(game):
         defences = [card for action_type, card in actions if action_type == "defend"]
         if not defences:
             return ("take", None)
-        
-        cheapest = min(defences, key=lambda card: cost(card, trump))
-        attack_card = game.table[-1][0]
-        
-        if suit(cheapest) == trump and suit(attack_card) != trump and rank(attack_card) < 5:
-            return ("take", None)
-        return("defend", cheapest)
+        return ("defend", min(defences, key=lambda card: cost(card, trump)))
 
     attacks = [card for action_type, card in actions if action_type == "attack"]
     if not attacks:
