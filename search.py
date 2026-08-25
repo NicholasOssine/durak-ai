@@ -1,7 +1,7 @@
 import math
 import random
 
-from heuristic import heuristic_action
+from rollout import softmax_action
 
 
 class Node:
@@ -23,7 +23,7 @@ class Node:
         child = Node(parent=self, action=action, player=player)
         self.children[action] = child
         return child
-    
+
 
 def determinize(game, player):
     game = game.copy()
@@ -48,7 +48,9 @@ def uct_select(node, actions, exploration):
 
     def uct(child):
         exploitation_part = child.wins / child.visits
-        exploration_part = exploration * math.sqrt(math.log(child.available) / child.visits)
+        exploration_part = exploration * math.sqrt(
+            math.log(child.available) / child.visits
+        )
         return exploitation_part + exploration_part
 
     return max((node.children[action] for action in actions), key=uct)
@@ -56,7 +58,7 @@ def uct_select(node, actions, exploration):
 
 def simulate(game):
     while game.phase != "OVER":
-        game.apply(heuristic_action(game))
+        game.apply(softmax_action(game))
     return game.durak
 
 
