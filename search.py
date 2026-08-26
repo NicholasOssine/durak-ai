@@ -56,23 +56,23 @@ def uct_select(node, actions, exploration):
     return max((node.children[action] for action in actions), key=uct)
 
 
+def value(game):
+    if game.durak is None:
+        return 0.5
+    return 1.0 if game.durak == 1 else 0.0
+
+
 def simulate(game):
     while game.phase != "OVER":
         game.apply(softmax_action(game))
-    return game.durak
+    return value(game)
 
 
-def score(durak, player):
-    if durak is None:
-        return 0.5
-    return 1 if durak != player else 0
-
-
-def backpropagate(node, durak):
+def backpropagate(node, player_0_value):
     while node is not None:
         node.visits += 1
         if node.player is not None:
-            node.wins += score(durak, node.player)
+            node.wins += player_0_value if node.player == 0 else 1 - player_0_value
         node = node.parent
 
 
