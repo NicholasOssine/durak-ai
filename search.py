@@ -4,6 +4,10 @@ import random
 from cards import suit
 from rollout import softmax_action
 
+HAND_WEIGHT = 1.0
+TRUMP_WEIGHT = 0.9
+VALUE_SCALE = 3.0
+
 
 class Node:
     def __init__(self, parent=None, action=None, player=None):
@@ -59,6 +63,14 @@ def uct_select(node, actions, exploration):
 
 def trumps(game, player):
     return sum(1 for card in game.hands[player] if suit(card) == game.trump)
+
+
+def positional_value(game):
+    hand_difference = len(game.hands[0]) - len(game.hands[1])
+    trump_difference = trumps(game, 0) - trumps(game, 1)
+
+    advantage = -HAND_WEIGHT * hand_difference + TRUMP_WEIGHT * trump_difference
+    return 1 / (1 + math.exp(-advantage / VALUE_SCALE))
 
 
 def value(game):
