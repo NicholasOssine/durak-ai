@@ -1,6 +1,7 @@
 import math
 import random
 
+from cards import suit
 from rollout import softmax_action
 
 
@@ -54,6 +55,10 @@ def uct_select(node, actions, exploration):
         return exploitation_part + exploration_part
 
     return max((node.children[action] for action in actions), key=uct)
+
+
+def trumps(game, player):
+    return sum(1 for card in game.hands[player] if suit(card) == game.trump)
 
 
 def value(game):
