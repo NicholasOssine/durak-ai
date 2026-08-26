@@ -4,6 +4,7 @@ import random
 from cards import suit
 from rollout import softmax_action
 
+TRUNCATION = 24
 HAND_WEIGHT = 1.0
 TRUMP_WEIGHT = 0.9
 VALUE_SCALE = 3.0
@@ -74,13 +75,17 @@ def positional_value(game):
 
 
 def value(game):
+    if game.phase != "OVER":
+        return positional_value(game)
     if game.durak is None:
         return 0.5
     return 1.0 if game.durak == 1 else 0.0
 
 
-def simulate(game):
-    while game.phase != "OVER":
+def simulate(game, truncation=TRUNCATION):
+    for _ in range(truncation):
+        if game.phase == "OVER":
+            break
         game.apply(softmax_action(game))
     return value(game)
 
