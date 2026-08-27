@@ -2,6 +2,7 @@ import math
 import random
 
 from cards import suit
+from endgame import best_action
 from rollout import softmax_action
 
 TRUNCATION = 24
@@ -118,6 +119,9 @@ def iterate(root, game, player, exploration):
 
 
 def ismcts_action(game, iterations=1000, exploration=0.7):
+    if not game.talon:
+        return best_action(game)
+
     player = game.current_player()
     root = Node()
 
