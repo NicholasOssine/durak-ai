@@ -1,10 +1,19 @@
+class Budget(Exception):
+    pass
+
+
 # Player 0 is max, player 1 is min
 def utility(game):
     durak = game.durak
     return 0 if durak is None else 1 if durak == 1 else -1
 
 
-def minimax(game, alpha=float("-inf"), beta=float("inf")):
+def minimax(game, alpha=float("-inf"), beta=float("inf"), budget=None):
+    if budget is not None:
+        budget[0] -= 1
+        if budget[0] < 0:
+            raise Budget
+
     if game.phase == "OVER":
         return utility(game)
 
@@ -13,7 +22,7 @@ def minimax(game, alpha=float("-inf"), beta=float("inf")):
         for action in game.get_actions():
             child = game.copy()
             child.apply(action)
-            value = max(value, minimax(child, alpha, beta))
+            value = max(value, minimax(child, alpha, beta, budget))
             alpha = max(alpha, value)
             if value >= beta:
                 break
@@ -23,7 +32,7 @@ def minimax(game, alpha=float("-inf"), beta=float("inf")):
         for action in game.get_actions():
             child = game.copy()
             child.apply(action)
-            value = min(value, minimax(child, alpha, beta))
+            value = min(value, minimax(child, alpha, beta, budget))
             beta = min(beta, value)
             if value <= alpha:
                 break
