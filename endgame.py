@@ -1,3 +1,6 @@
+NODES = 120000
+
+
 class Budget(Exception):
     pass
 
@@ -39,7 +42,8 @@ def minimax(game, alpha=float("-inf"), beta=float("inf"), budget=None):
         return value
 
 
-def best_action(game):
+def best_action(game, nodes=NODES):
+    budget = [nodes]
     chosen_action = None
 
     if game.current_player() == 0:
@@ -47,7 +51,7 @@ def best_action(game):
         for action in game.get_actions():
             child = game.copy()
             child.apply(action)
-            value = minimax(child, chosen_value, float("inf"))
+            value = minimax(child, chosen_value, float("inf"), budget)
             if value > chosen_value:
                 chosen_action = action
                 chosen_value = value
@@ -56,7 +60,7 @@ def best_action(game):
         for action in game.get_actions():
             child = game.copy()
             child.apply(action)
-            value = minimax(child, float("-inf"), chosen_value)
+            value = minimax(child, float("-inf"), chosen_value, budget)
             if value < chosen_value:
                 chosen_action = action
                 chosen_value = value
