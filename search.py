@@ -49,6 +49,12 @@ def determinize(game, player):
     return game
 
 
+def deduced(game, player):
+    state = game.copy()
+    state.hands[1 - player] = game.hidden_from(player)
+    return state
+
+
 def uct_select(node, actions, exploration):
     for action in actions:
         node.children[action].available += 1
@@ -121,7 +127,7 @@ def iterate(root, game, player, exploration):
 def ismcts_action(game, iterations=1000, exploration=0.7):
     if not game.talon:
         try:
-            return best_action(game)
+            return best_action(deduced(game, game.current_player()))
         except Budget:
             pass
 
