@@ -22,4 +22,20 @@ impl Hand {
         let index = self.cards.iter().position(|held| *held == card).unwrap();
         self.cards.remove(index);
     }
+
+    pub fn contains(&self, card: Card) -> bool {
+        self.cards.contains(&card)
+    }
+
+    pub fn len(&self) -> usize {
+        self.cards.len()
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.cards.is_empty()
+    }
+
+    pub fn cards(&self) -> impl Iterator<Item = Card> + '_ {
+        self.cards.iter().copied()
+    }
 }
