@@ -1,5 +1,7 @@
-use crate::cards::{Card, suit};
+use crate::cards::{Card, DECK_SIZE, suit};
 use crate::hand::Hand;
+use rand::rngs::SmallRng;
+use rand::seq::SliceRandom;
 
 pub const HAND_SIZE: usize = 6;
 
@@ -23,6 +25,38 @@ pub struct Durak {
     pub phase: Phase,
     pub max_attacks: usize,
     pub durak: Option<usize>,
+}
+
+impl Durak {
+    pub fn new(rng: &mut SmallRng) -> Durak {
+        let mut deck: Vec<Card> = (0..DECK_SIZE as Card).collect();
+        deck.shuffle(rng);
+
+        let mut first_hand = deck[0..HAND_SIZE].to_vec();
+        let mut second_hand = deck[HAND_SIZE..2 * HAND_SIZE].to_vec();
+        first_hand.sort();
+        second_hand.sort();
+
+        let hands = [Hand::from_cards(first_hand), Hand::from_cards(second_hand)];
+        let talon = deck[2 * HAND_SIZE..].to_vec();
+        let trump_card = talon[0];
+        let trump = suit(trump_card);
+        let attacker = first_attacker(&hands, trump);
+        let max_attacks = HAND_SIZE.min(hands[1 - attacker].len());
+
+        Durak {
+            hands,
+            talon,
+            trump_card,
+            trump,
+            attacker,
+            table: Vec::new(),
+            discard: Hand::new(),
+            phase: Phase::Attack,
+            max_attacks,
+            durak: None,
+        }
+    }
 }
 
 fn first_attacker(hands: &[Hand; 2], trump: u8) -> usize {
