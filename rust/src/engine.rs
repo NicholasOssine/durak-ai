@@ -6,6 +6,14 @@ use rand::seq::SliceRandom;
 pub const HAND_SIZE: usize = 6;
 
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub enum Action {
+    Attack(Card),
+    Defend(Card),
+    Take,
+    End,
+}
+
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum Phase {
     Attack,
     Defend,
