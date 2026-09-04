@@ -85,6 +85,14 @@ impl Durak {
             return actions;
         }
 
+        if self.phase == Phase::Attack && self.table.is_empty() {
+            let mut actions = Vec::new();
+            for card in self.hands[self.attacker].cards() {
+                actions.push(Action::Attack(card));
+            }
+            return actions;
+        }
+
         Vec::new()
     }
 }
