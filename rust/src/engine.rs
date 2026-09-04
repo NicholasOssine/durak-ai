@@ -1,4 +1,4 @@
-use crate::cards::{Card, DECK_SIZE, suit};
+use crate::cards::{Card, DECK_SIZE, beats, suit};
 use crate::hand::Hand;
 use rand::rngs::SmallRng;
 use rand::seq::SliceRandom;
@@ -64,6 +64,28 @@ impl Durak {
             max_attacks,
             durak: None,
         }
+    }
+
+    pub fn get_actions(&self) -> Vec<Action> {
+        if self.phase == Phase::Over {
+            return Vec::new();
+        }
+
+        if self.phase == Phase::Defend {
+            let defender = 1 - self.attacker;
+            let attack_card = self.table[self.table.len() - 1].0;
+            let mut actions = Vec::new();
+
+            for card in self.hands[defender].cards() {
+                if beats(attack_card, card, self.trump) {
+                    actions.push(Action::Defend(card));
+                }
+            }
+            actions.push(Action::Take);
+            return actions;
+        }
+
+        Vec::new()
     }
 }
 
