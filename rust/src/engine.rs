@@ -113,6 +113,14 @@ impl Durak {
         actions.push(Action::End);
         actions
     }
+
+    pub fn current_player(&self) -> usize {
+        if self.phase == Phase::Defend {
+            1 - self.attacker
+        } else {
+            self.attacker
+        }
+    }
 }
 
 fn first_attacker(hands: &[Hand; 2], trump: u8) -> usize {
