@@ -143,6 +143,13 @@ impl Durak {
         }
         hidden
     }
+
+    fn draw(&mut self, player: usize) {
+        while self.hands[player].len() < HAND_SIZE && !self.talon.is_empty() {
+            let card = self.talon.pop().unwrap();
+            self.hands[player].add(card);
+        }
+    }
 }
 
 fn first_attacker(hands: &[Hand; 2], trump: u8) -> usize {
