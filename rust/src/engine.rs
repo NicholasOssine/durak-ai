@@ -121,6 +121,28 @@ impl Durak {
             self.attacker
         }
     }
+
+    pub fn hidden_from(&self, player: usize) -> Hand {
+        let mut seen = self.hands[player].clone();
+
+        for card in self.discard.cards() {
+            seen.add(card);
+        }
+        for &(attack, defence) in &self.table {
+            seen.add(attack);
+            if let Some(card) = defence {
+                seen.add(card);
+            }
+        }
+
+        let mut hidden = Hand::new();
+        for card in 0..DECK_SIZE as Card {
+            if !seen.contains(card) {
+                hidden.add(card);
+            }
+        }
+        hidden
+    }
 }
 
 fn first_attacker(hands: &[Hand; 2], trump: u8) -> usize {
