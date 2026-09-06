@@ -150,6 +150,30 @@ impl Durak {
             self.hands[player].add(card);
         }
     }
+
+    fn end_bout(&mut self) {
+        let defender = 1 - self.attacker;
+        let mut played = Hand::new();
+
+        for &(attack, defence) in &self.table {
+            played.add(attack);
+            if let Some(card) = defence {
+                played.add(card);
+            }
+        }
+
+        if self.phase == Phase::Taking {
+            for card in played.cards() {
+                self.hands[defender].add(card);
+            }
+        } else {
+            for card in played.cards() {
+                self.discard.add(card);
+            }
+        }
+
+        self.table.clear();
+    }
 }
 
 fn first_attacker(hands: &[Hand; 2], trump: u8) -> usize {
