@@ -1,5 +1,7 @@
 use crate::cards::{Card, rank, suit};
-use crate::engine::Action;
+use crate::engine::{Action, Durak};
+use rand::RngExt;
+use rand::rngs::SmallRng;
 
 const TEMPERATURE: f64 = 2.0;
 const TAKE_COST: u8 = 99;
@@ -26,4 +28,25 @@ fn action_weights(actions: &[Action], trump: u8) -> Vec<f64> {
         weights.push(action_weight(action, trump));
     }
     weights
+}
+
+pub fn softmax_action(game: &Durak, rng: &mut SmallRng) -> Action {
+    let actions = game.get_actions();
+    if actions.len() == 1 {
+        return actions[0];
+    }
+
+    let weights = action_weights(&actions, game.trump);
+    let total: f64 = weights.iter().sum();
+    let target = rng.random::<f64>() * total;
+    let mut running = 0.0;
+
+    for index in 0..actions.len() {
+        running += weights[index];
+        if running >= target {
+            return actions[index];
+        }
+    }
+
+    actions[actions.len() - 1]
 }
