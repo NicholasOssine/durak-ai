@@ -19,3 +19,11 @@ fn action_weight(action: Action, trump: u8) -> f64 {
     };
     softmax_weight(action_cost)
 }
+
+fn action_weights(actions: &[Action], trump: u8) -> Vec<f64> {
+    let mut weights = Vec::new();
+    for &action in actions {
+        weights.push(action_weight(action, trump));
+    }
+    weights
+}
