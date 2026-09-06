@@ -173,6 +173,15 @@ impl Durak {
         }
 
         self.table.clear();
+        self.draw(self.attacker);
+        self.draw(defender);
+
+        if self.phase != Phase::Taking {
+            self.attacker = defender;
+        }
+
+        self.phase = Phase::Attack;
+        self.max_attacks = HAND_SIZE.min(self.hands[1 - self.attacker].len());
     }
 }
 
