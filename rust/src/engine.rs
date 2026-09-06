@@ -197,6 +197,29 @@ impl Durak {
         self.phase = Phase::Attack;
         self.max_attacks = HAND_SIZE.min(self.hands[1 - self.attacker].len());
     }
+
+    pub fn apply(&mut self, action: Action) {
+        match action {
+            Action::Attack(card) => {
+                self.hands[self.attacker].remove(card);
+                self.table.push((card, None));
+                if self.phase != Phase::Taking {
+                    self.phase = Phase::Defend;
+                }
+            }
+            Action::Defend(card) => {
+                let defender = 1 - self.attacker;
+                self.hands[defender].remove(card);
+                let last = self.table.len() - 1;
+                self.table[last].1 = Some(card);
+                self.phase = Phase::Attack;
+            }
+            Action::Take => {
+                self.phase = Phase::Taking;
+            }
+            Action::End => self.end_bout(),
+        }
+    }
 }
 
 fn first_attacker(hands: &[Hand; 2], trump: u8) -> usize {
