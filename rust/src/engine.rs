@@ -176,6 +176,20 @@ impl Durak {
         self.draw(self.attacker);
         self.draw(defender);
 
+        if self.talon.is_empty()
+            && (self.hands[self.attacker].is_empty() || self.hands[defender].is_empty())
+        {
+            self.phase = Phase::Over;
+            if self.hands[self.attacker].is_empty() && self.hands[defender].is_empty() {
+                self.durak = None;
+            } else if self.hands[self.attacker].is_empty() {
+                self.durak = Some(defender);
+            } else {
+                self.durak = Some(self.attacker);
+            }
+            return;
+        }
+
         if self.phase != Phase::Taking {
             self.attacker = defender;
         }
