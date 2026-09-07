@@ -14,3 +14,11 @@ fn trumps(game: &Durak, player: usize) -> usize {
         .filter(|card| suit(*card) == game.trump)
         .count()
 }
+
+fn positional_value(game: &Durak) -> f64 {
+    let hand_difference = game.hands[0].len() as f64 - game.hands[1].len() as f64;
+    let trump_difference = trumps(game, 0) as f64 - trumps(game, 1) as f64;
+    let advantage = -HAND_WEIGHT * hand_difference + TRUMP_WEIGHT * trump_difference;
+
+    1.0 / (1.0 + (-advantage / VALUE_SCALE).exp())
+}
