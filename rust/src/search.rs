@@ -2,6 +2,7 @@ use crate::cards::suit;
 use crate::engine::{Durak, Phase};
 use crate::rollout::softmax_action;
 use rand::rngs::SmallRng;
+use rand::seq::SliceRandom;
 
 const TRUNCATION: usize = 24;
 const HAND_WEIGHT: f64 = 1.0;
@@ -45,4 +46,16 @@ fn simulate(game: &mut Durak, rng: &mut SmallRng) -> f64 {
         game.apply(action);
     }
     value(game)
+}
+
+fn determinize(game: &Durak, player: usize, rng: &mut SmallRng) -> Durak {
+    let mut state = game.clone();
+    let opponent = 1 - player;
+    let mut unknown: Vec<_> = game.hidden_from(player).cards().collect();
+    unknown.shuffle(rng);
+
+    let opponent_size = game.hands[opponent].len();
+    state.hands[opponent] = crate::hand::Hand::from_cards(unknown[..opponent_size].to_vec());
+    state.talon = unknown[opponent_size..].to_vec();
+    state
 }
