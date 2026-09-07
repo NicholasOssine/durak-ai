@@ -1,6 +1,7 @@
 use crate::cards::suit;
 use crate::engine::{Durak, Phase};
 use crate::rollout::softmax_action;
+use rand::rngs::SmallRng;
 
 const TRUNCATION: usize = 24;
 const HAND_WEIGHT: f64 = 1.0;
@@ -33,4 +34,15 @@ fn value(game: &Durak) -> f64 {
         Some(1) => 1.0,
         Some(_) => 0.0,
     }
+}
+
+fn simulate(game: &mut Durak, rng: &mut SmallRng) -> f64 {
+    for _ in 0..TRUNCATION {
+        if game.phase == Phase::Over {
+            break;
+        }
+        let action = softmax_action(game, rng);
+        game.apply(action);
+    }
+    value(game)
 }
