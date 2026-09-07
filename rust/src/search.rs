@@ -1,5 +1,5 @@
 use crate::cards::suit;
-use crate::engine::Durak;
+use crate::engine::{Durak, Phase};
 use crate::rollout::softmax_action;
 
 const TRUNCATION: usize = 24;
@@ -21,4 +21,16 @@ fn positional_value(game: &Durak) -> f64 {
     let advantage = -HAND_WEIGHT * hand_difference + TRUMP_WEIGHT * trump_difference;
 
     1.0 / (1.0 + (-advantage / VALUE_SCALE).exp())
+}
+
+fn value(game: &Durak) -> f64 {
+    if game.phase != Phase::Over {
+        return positional_value(game);
+    }
+
+    match game.durak {
+        None => 0.5,
+        Some(1) => 1.0,
+        Some(_) => 0.0,
+    }
 }
