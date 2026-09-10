@@ -51,11 +51,25 @@ fn simulate(game: &mut Durak, rng: &mut SmallRng) -> f64 {
 fn determinize(game: &Durak, player: usize, rng: &mut SmallRng) -> Durak {
     let mut state = game.clone();
     let opponent = 1 - player;
+    let has_talon = !game.talon.is_empty();
     let mut unknown: Vec<_> = game.hidden_from(player).cards().collect();
+
+    if has_talon {
+        let trump_index = unknown
+            .iter()
+            .position(|card| *card == game.trump_card)
+            .unwrap();
+        unknown.remove(trump_index);
+    }
     unknown.shuffle(rng);
 
     let opponent_size = game.hands[opponent].len();
     state.hands[opponent] = crate::hand::Hand::from_cards(unknown[..opponent_size].to_vec());
-    state.talon = unknown[opponent_size..].to_vec();
+
+    let mut talon = unknown[opponent_size..].to_vec();
+    if has_talon {
+        talon.insert(0, game.trump_card);
+    }
+    state.talon = talon;
     state
 }
