@@ -1,5 +1,5 @@
 use crate::cards::suit;
-use crate::engine::{Durak, Phase};
+use crate::engine::{Action, Durak, Phase};
 use crate::rollout::softmax_action;
 use rand::rngs::SmallRng;
 use rand::seq::SliceRandom;
@@ -72,4 +72,26 @@ fn determinize(game: &Durak, player: usize, rng: &mut SmallRng) -> Durak {
     }
     state.talon = talon;
     state
+}
+
+struct Node {
+    parent: Option<usize>,
+    children: Vec<(Action, usize)>,
+    player: Option<usize>,
+    visits: u32,
+    wins: f64,
+    available: u32,
+}
+
+impl Node {
+    fn new(parent: Option<usize>, player: Option<usize>) -> Node {
+        Node {
+            parent,
+            children: Vec::new(),
+            player,
+            visits: 0,
+            wins: 0.0,
+            available: 0,
+        }
+    }
 }
