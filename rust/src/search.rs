@@ -111,3 +111,10 @@ fn untried(node: &Node, actions: &[Action]) -> Vec<Action> {
 
     result
 }
+
+fn add_child(tree: &mut Vec<Node>, parent: usize, action: Action, player: usize) -> usize {
+    let child = tree.len();
+    tree.push(Node::new(Some(parent), Some(player)));
+    tree[parent].children.push((action, child));
+    child
+}
