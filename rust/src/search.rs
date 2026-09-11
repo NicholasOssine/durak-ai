@@ -95,3 +95,19 @@ impl Node {
         }
     }
 }
+
+fn untried(node: &Node, actions: &[Action]) -> Vec<Action> {
+    let mut result = Vec::new();
+
+    for &action in actions {
+        let tried = node
+            .children
+            .iter()
+            .any(|(child_action, _)| *child_action == action);
+        if !tried {
+            result.push(action);
+        }
+    }
+
+    result
+}
