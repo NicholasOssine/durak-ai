@@ -169,3 +169,17 @@ fn backpropagate(tree: &mut [Node], start: usize, player_0_value: f64) {
         current = node.parent;
     }
 }
+
+fn select(tree: &mut [Node], state: &mut Durak) -> (usize, Vec<Action>) {
+    let mut node = 0;
+    let mut actions = state.get_actions();
+
+    while state.phase != Phase::Over && untried(&tree[node], &actions).is_empty() {
+        let (action, child) = uct_select(tree, node, &actions);
+        state.apply(action);
+        node = child;
+        actions = state.get_actions();
+    }
+
+    (node, actions)
+}
