@@ -1,6 +1,7 @@
 use crate::cards::suit;
 use crate::engine::{Action, Durak, Phase};
 use crate::rollout::softmax_action;
+use rand::RngExt;
 use rand::rngs::SmallRng;
 use rand::seq::SliceRandom;
 
@@ -182,4 +183,19 @@ fn select(tree: &mut [Node], state: &mut Durak) -> (usize, Vec<Action>) {
     }
 
     (node, actions)
+}
+
+fn expand(
+    tree: &mut Vec<Node>,
+    node: usize,
+    state: &mut Durak,
+    actions: &[Action],
+    rng: &mut SmallRng,
+) -> usize {
+    let candidates = untried(&tree[node], actions);
+    let action = candidates[rng.random_range(0..candidates.len())];
+    let player = state.current_player();
+
+    state.apply(action);
+    add_child(tree, node, action, player)
 }
