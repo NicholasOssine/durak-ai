@@ -152,3 +152,20 @@ fn uct_select(tree: &mut [Node], node: usize, actions: &[Action]) -> (Action, us
     }
     best
 }
+
+fn backpropagate(tree: &mut [Node], start: usize, player_0_value: f64) {
+    let mut current = Some(start);
+
+    while let Some(index) = current {
+        let node = &mut tree[index];
+        node.visits += 1;
+        if let Some(player) = node.player {
+            if player == 0 {
+                node.wins += player_0_value;
+            } else {
+                node.wins += 1.0 - player_0_value;
+            }
+        }
+        current = node.parent;
+    }
+}
