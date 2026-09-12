@@ -124,3 +124,31 @@ fn uct_score(node: &Node) -> f64 {
     let exploration = EXPLORATION * ((node.available as f64).ln() / node.visits as f64).sqrt();
     exploitation + exploration
 }
+
+fn uct_select(tree: &mut [Node], node: usize, actions: &[Action]) -> (Action, usize) {
+    let mut legal = Vec::new();
+
+    for &action in actions {
+        for &(child_action, child) in &tree[node].children {
+            if child_action == action {
+                legal.push((action, child));
+                break;
+            }
+        }
+    }
+
+    for &(_, child) in &legal {
+        tree[child].available += 1;
+    }
+
+    let mut best = legal[0];
+    let mut best_score = f64::NEG_INFINITY;
+    for &(action, child) in &legal {
+        let score = uct_score(&tree[child]);
+        if score > best_score {
+            best = (action, child);
+            best_score = score;
+        }
+    }
+    best
+}
