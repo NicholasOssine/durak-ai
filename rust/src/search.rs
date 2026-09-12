@@ -199,3 +199,15 @@ fn expand(
     state.apply(action);
     add_child(tree, node, action, player)
 }
+
+fn iterate(tree: &mut Vec<Node>, game: &Durak, player: usize, rng: &mut SmallRng) {
+    let mut state = determinize(game, player, rng);
+    let (mut node, actions) = select(tree, &mut state);
+
+    if state.phase != Phase::Over {
+        node = expand(tree, node, &mut state, &actions, rng);
+    }
+
+    let result = simulate(&mut state, rng);
+    backpropagate(tree, node, result);
+}
