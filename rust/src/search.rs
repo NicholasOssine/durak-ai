@@ -118,3 +118,9 @@ fn add_child(tree: &mut Vec<Node>, parent: usize, action: Action, player: usize)
     tree[parent].children.push((action, child));
     child
 }
+
+fn uct_score(node: &Node) -> f64 {
+    let exploitation = node.wins / node.visits as f64;
+    let exploration = EXPLORATION * ((node.available as f64).ln() / node.visits as f64).sqrt();
+    exploitation + exploration
+}
