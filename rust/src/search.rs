@@ -211,3 +211,20 @@ fn iterate(tree: &mut Vec<Node>, game: &Durak, player: usize, rng: &mut SmallRng
     let result = simulate(&mut state, rng);
     backpropagate(tree, node, result);
 }
+
+pub fn ismcts_action(game: &Durak, iterations: usize, rng: &mut SmallRng) -> Action {
+    let player = game.current_player();
+    let mut tree = vec![Node::new(None, None)];
+
+    for _ in 0..iterations {
+        iterate(&mut tree, game, player, rng);
+    }
+
+    let mut best = tree[0].children[0];
+    for &(action, child) in &tree[0].children {
+        if tree[child].visits > tree[best.1].visits {
+            best = (action, child);
+        }
+    }
+    best.0
+}
