@@ -4,6 +4,7 @@ use crate::rollout::softmax_action;
 use rand::RngExt;
 use rand::rngs::SmallRng;
 use rand::seq::SliceRandom;
+use std::time::{Duration, Instant};
 
 const TRUNCATION: usize = 24;
 const HAND_WEIGHT: f64 = 1.0;
@@ -212,12 +213,16 @@ fn iterate(tree: &mut Vec<Node>, game: &Durak, player: usize, rng: &mut SmallRng
     backpropagate(tree, node, result);
 }
 
-pub fn ismcts_action(game: &Durak, iterations: usize, rng: &mut SmallRng) -> Action {
+pub fn ismcts_action(game: &Durak, budget: Duration, rng: &mut SmallRng) -> Action {
     let player = game.current_player();
     let mut tree = vec![Node::new(None, None)];
+    let start = Instant::now();
 
-    for _ in 0..iterations {
+    loop {
         iterate(&mut tree, game, player, rng);
+        if start.elapsed() >= budget {
+            break;
+        }
     }
 
     let mut best = tree[0].children[0];
