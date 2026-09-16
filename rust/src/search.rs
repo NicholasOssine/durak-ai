@@ -213,6 +213,12 @@ fn iterate(tree: &mut Vec<Node>, game: &Durak, player: usize, rng: &mut SmallRng
     backpropagate(tree, node, result);
 }
 
+fn deduced(game: &Durak, player: usize) -> Durak {
+    let mut state = game.clone();
+    state.hands[1 - player] = game.hidden_from(player);
+    state
+}
+
 pub fn ismcts_action(game: &Durak, budget: Duration, rng: &mut SmallRng) -> Action {
     let player = game.current_player();
     let mut tree = vec![Node::new(None, None)];
