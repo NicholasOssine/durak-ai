@@ -1,4 +1,5 @@
 mod cards;
+mod endgame;
 mod engine;
 mod hand;
 mod rollout;
