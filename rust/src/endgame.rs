@@ -1,4 +1,4 @@
-use crate::engine::{Durak, Phase};
+use crate::engine::{Action, Durak, Phase};
 
 pub const NODES: u32 = 120_000;
 
@@ -45,4 +45,35 @@ fn minimax(game: &Durak, mut alpha: i8, mut beta: i8, budget: &mut u32) -> Optio
         }
         Some(value)
     }
+}
+
+pub fn best_action(game: &Durak, nodes: u32) -> Option<Action> {
+    let mut budget = nodes;
+    let mut chosen_action = None;
+
+    if game.current_player() == 0 {
+        let mut chosen_value = i8::MIN;
+        for action in game.get_actions() {
+            let mut child = game.clone();
+            child.apply(action);
+            let value = minimax(&child, chosen_value, i8::MAX, &mut budget)?;
+            if value > chosen_value {
+                chosen_action = Some(action);
+                chosen_value = value;
+            }
+        }
+    } else {
+        let mut chosen_value = i8::MAX;
+        for action in game.get_actions() {
+            let mut child = game.clone();
+            child.apply(action);
+            let value = minimax(&child, i8::MIN, chosen_value, &mut budget)?;
+            if value < chosen_value {
+                chosen_action = Some(action);
+                chosen_value = value;
+            }
+        }
+    }
+
+    chosen_action
 }
