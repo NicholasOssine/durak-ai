@@ -1,4 +1,5 @@
 use crate::cards::suit;
+use crate::endgame;
 use crate::engine::{Action, Durak, Phase};
 use crate::rollout::softmax_action;
 use rand::RngExt;
@@ -221,6 +222,12 @@ fn deduced(game: &Durak, player: usize) -> Durak {
 
 pub fn ismcts_action(game: &Durak, budget: Duration, rng: &mut SmallRng) -> Action {
     let player = game.current_player();
+
+    if game.talon.is_empty() {
+        if let Some(action) = endgame::best_action(&deduced(game, player), endgame::NODES) {
+            return action;
+        }
+    }
     let mut tree = vec![Node::new(None, None)];
     let start = Instant::now();
 
