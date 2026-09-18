@@ -19,3 +19,22 @@ fn parse_phase(text: &str) -> Option<Phase> {
         _ => None,
     }
 }
+
+fn parse_table(text: &str) -> Option<Vec<(Card, Option<Card>)>> {
+    if text == "-" {
+        return Some(Vec::new());
+    }
+
+    let mut table = Vec::new();
+    for entry in text.split(',') {
+        let (attack, defence) = entry.split_once(':')?;
+        let attack = attack.parse().ok()?;
+        let defence = if defence == "-" {
+            None
+        } else {
+            Some(defence.parse().ok()?)
+        };
+        table.push((attack, defence));
+    }
+    Some(table)
+}
