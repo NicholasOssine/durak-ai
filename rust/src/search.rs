@@ -1,13 +1,14 @@
 use crate::cards::suit;
 use crate::endgame;
-use crate::engine::{Action, Durak, Phase};
+use crate::engine::{Action, Durak, MAX_TALON, Phase};
+use crate::hand::Hand;
 use crate::rollout::softmax_action;
 use rand::RngExt;
 use rand::rngs::SmallRng;
 use rand::seq::SliceRandom;
 use std::time::{Duration, Instant};
 
-const TRUNCATION: usize = 24;
+const ROLLOUT_DEPTH: usize = 24;
 const HAND_WEIGHT: f64 = 1.0;
 const TRUMP_WEIGHT: f64 = 0.9;
 const VALUE_SCALE: f64 = 3.0;
@@ -41,7 +42,7 @@ fn value(game: &Durak) -> f64 {
 }
 
 fn simulate(game: &mut Durak, rng: &mut SmallRng) -> f64 {
-    for _ in 0..TRUNCATION {
+    for _ in 0..ROLLOUT_DEPTH {
         if game.phase == Phase::Over {
             break;
         }
@@ -54,7 +55,7 @@ fn simulate(game: &mut Durak, rng: &mut SmallRng) -> f64 {
 fn determinize(game: &Durak, player: usize, rng: &mut SmallRng) -> Durak {
     let mut state = game.clone();
     let opponent = 1 - player;
-    let has_talon = !game.talon.is_empty();
+    let has_talon = game.talon_len > 0;
     let mut unknown: Vec<_> = game.hidden_from(player).cards().collect();
 
     if has_talon {
@@ -67,13 +68,18 @@ fn determinize(game: &Durak, player: usize, rng: &mut SmallRng) -> Durak {
     unknown.shuffle(rng);
 
     let opponent_size = game.hands[opponent].len();
-    state.hands[opponent] = crate::hand::Hand::from_cards(unknown[..opponent_size].to_vec());
+    state.hands[opponent] = Hand::from_cards(unknown[..opponent_size].to_vec());
 
-    let mut talon = unknown[opponent_size..].to_vec();
+    let rest = &unknown[opponent_size..];
+    state.talon = [0; MAX_TALON];
     if has_talon {
-        talon.insert(0, game.trump_card);
+        state.talon[0] = game.trump_card;
+        state.talon[1..=rest.len()].copy_from_slice(rest);
+        state.talon_len = rest.len() + 1;
+    } else {
+        state.talon[..rest.len()].copy_from_slice(rest);
+        state.talon_len = rest.len();
     }
-    state.talon = talon;
     state
 }
 
@@ -223,7 +229,7 @@ fn deduced(game: &Durak, player: usize) -> Durak {
 pub fn ismcts_action(game: &Durak, budget: Duration, rng: &mut SmallRng) -> Action {
     let player = game.current_player();
 
-    if game.talon.is_empty() {
+    if game.talon_len == 0 {
         if let Some(action) = endgame::best_action(&deduced(game, player), endgame::NODES) {
             return action;
         }

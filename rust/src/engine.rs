@@ -4,6 +4,7 @@ use rand::rngs::SmallRng;
 use rand::seq::SliceRandom;
 
 pub const HAND_SIZE: usize = 6;
+pub const MAX_TALON: usize = 24;
 
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum Action {
@@ -24,7 +25,8 @@ pub enum Phase {
 #[derive(Clone)]
 pub struct Durak {
     pub hands: [Hand; 2],
-    pub talon: Vec<Card>,
+    pub talon: [Card; MAX_TALON],
+    pub talon_len: usize,
     pub trump_card: Card,
     pub trump: u8,
     pub attacker: usize,
@@ -46,7 +48,8 @@ impl Durak {
         second_hand.sort();
 
         let hands = [Hand::from_cards(first_hand), Hand::from_cards(second_hand)];
-        let talon = deck[2 * HAND_SIZE..].to_vec();
+        let mut talon = [0; MAX_TALON];
+        talon.copy_from_slice(&deck[2 * HAND_SIZE..]);
         let trump_card = talon[0];
         let trump = suit(trump_card);
         let attacker = first_attacker(&hands, trump);
@@ -55,6 +58,7 @@ impl Durak {
         Durak {
             hands,
             talon,
+            talon_len: MAX_TALON,
             trump_card,
             trump,
             attacker,
@@ -123,7 +127,7 @@ impl Durak {
     }
 
     pub fn hidden_from(&self, player: usize) -> Hand {
-        let mut seen = self.hands[player].clone();
+        let mut seen = self.hands[player];
 
         for card in self.discard.cards() {
             seen.add(card);
@@ -145,9 +149,9 @@ impl Durak {
     }
 
     fn draw(&mut self, player: usize) {
-        while self.hands[player].len() < HAND_SIZE && !self.talon.is_empty() {
-            let card = self.talon.pop().unwrap();
-            self.hands[player].add(card);
+        while self.hands[player].len() < HAND_SIZE && self.talon_len > 0 {
+            self.talon_len -= 1;
+            self.hands[player].add(self.talon[self.talon_len]);
         }
     }
 
@@ -176,7 +180,7 @@ impl Durak {
         self.draw(self.attacker);
         self.draw(defender);
 
-        if self.talon.is_empty()
+        if self.talon_len == 0
             && (self.hands[self.attacker].is_empty() || self.hands[defender].is_empty())
         {
             self.phase = Phase::Over;

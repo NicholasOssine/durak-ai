@@ -1,5 +1,5 @@
 use crate::cards::{Card, DECK_SIZE, suit};
-use crate::engine::{Action, Durak, Phase};
+use crate::engine::{Action, Durak, MAX_TALON, Phase};
 use crate::hand::Hand;
 use crate::search;
 use rand::rngs::SmallRng;
@@ -61,11 +61,15 @@ fn parse_state(fields: &[&str]) -> Option<Durak> {
     }
 
     let talon_len = fields[3].parse().ok()?;
+    if talon_len > MAX_TALON {
+        return None;
+    }
     let trump_card = fields[4].parse().ok()?;
 
     Some(Durak {
         hands: [parse_hand(fields[0])?, parse_hand(fields[1])?],
-        talon: vec![0; talon_len],
+        talon: [0; MAX_TALON],
+        talon_len,
         trump_card,
         trump: suit(trump_card),
         attacker: fields[6].parse().ok()?,
