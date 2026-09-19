@@ -1,4 +1,4 @@
-use crate::cards::{Card, DECK_SIZE};
+use crate::cards::Card;
 
 #[derive(Clone, Copy, PartialEq, Eq, Debug, Hash)]
 pub struct Hand {
@@ -38,7 +38,17 @@ impl Hand {
         self.bits == 0
     }
 
-    pub fn cards(&self) -> impl Iterator<Item = Card> + '_ {
-        (0..DECK_SIZE as Card).filter(|card| self.contains(*card))
+    pub fn cards(&self) -> impl Iterator<Item = Card> {
+        let mut bits = self.bits;
+
+        std::iter::from_fn(move || {
+            if bits == 0 {
+                return None;
+            }
+
+            let card = bits.trailing_zeros() as Card;
+            bits &= bits - 1;
+            Some(card)
+        })
     }
 }
