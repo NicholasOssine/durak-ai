@@ -1,6 +1,9 @@
 use crate::cards::{Card, DECK_SIZE, suit};
 use crate::engine::{Action, Durak, Phase};
 use crate::hand::Hand;
+use crate::search;
+use rand::rngs::SmallRng;
+use std::time::Duration;
 
 fn format_action(action: Action) -> String {
     match action {
@@ -72,4 +75,26 @@ fn parse_state(fields: &[&str]) -> Option<Durak> {
         max_attacks: fields[8].parse().ok()?,
         durak: None,
     })
+}
+
+pub fn respond(line: &str, rng: &mut SmallRng) -> String {
+    let fields: Vec<&str> = line.split_whitespace().collect();
+    if fields.first() != Some(&"move") || fields.len() != 11 {
+        return "error expected: move <hand0> <hand1> <discard> <talon_len> <trump_card> <table> <attacker> <phase> <max_attacks> <ms>".to_string();
+    }
+
+    let game = match parse_state(&fields[1..10]) {
+        Some(game) => game,
+        None => return "error malformed state".to_string(),
+    };
+    let millis = match fields[10].parse::<u64>() {
+        Ok(millis) => millis,
+        Err(_) => return "error malformed budget".to_string(),
+    };
+    if game.get_actions().is_empty() {
+        return "error no legal actions".to_string();
+    }
+
+    let action = search::ismcts_action(&game, Duration::from_millis(millis), rng);
+    format_action(action)
 }
